@@ -127,3 +127,30 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters = 100, gamma = 
               bi=n_iter, ti=max_iters - 1, l=loss))
 
     return ws[-1], losses[-1]
+
+def ridge_regression_GD(y, tx, initial_w, lambda_, max_iters=100, verbose=False):
+    """Gradient descent algorithm.
+    Return: w, loss"""
+    # Define parameters to store w and loss
+    loss_function = "MSE"
+    ws = [initial_w]
+    losses = []
+    w = initial_w
+    N = len(y)
+    for n_iter in range(max_iters):
+        # compute gradient and loss
+        gradient = -1/N*tx.T.dot(y-tx@w) + lambda_*w
+        loss = compute_loss(y,tx,w, loss_function)
+        L = 1/N*np.linalg.norm(tx.T.dot(tx)) + lambda_
+        # update w by gradient
+        w = w - (2/(L+lambda_)) * gradient
+        
+        # store w and loss
+        ws.append(w)
+        losses.append(loss)
+        if verbose == True:
+            print("Gradient Descent({bi}/{ti}): loss={l}".format(
+              bi=n_iter, ti=max_iters - 1, l=loss))
+            
+
+    return ws[-1],losses[-1]
