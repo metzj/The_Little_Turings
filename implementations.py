@@ -58,7 +58,7 @@ def least_squares_SGD(y, tx, initial_w, batch_size=1, max_iters=100, gamma=0.7, 
 def least_squares(y, tx):
     """calculate the least squares solution using normal equation
        Return: weights, MSE"""
-    w = np.linalg.inv((tx.transpose() @ tx)) @ tx.transpose() @ y
+    w = np.linalg.solve((tx.transpose() @ tx, tx.transpose() @ y)
     n = len(y)
     e = y-tx@w
     MSE = 1/(2*n)*e@e
@@ -71,7 +71,7 @@ def ridge_regression(y, tx, lambda_):
     # ridge regression:
     D = np.shape(tx)[1]
     N = np.shape(tx)[0]
-    w = np.linalg.inv(tx.transpose()@tx+2*N*lambda_*np.identity(D))@tx.transpose()@y
+    w = np.linalg.solve(tx.transpose()@tx+2*N*lambda_*np.identity(D), tx.transpose()@y)
     loss = compute_loss(y,tx,w, "MSE")
     return w,loss
 
