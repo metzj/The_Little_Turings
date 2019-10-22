@@ -141,7 +141,7 @@ def ridge_regression_GD(y, tx, initial_w, lambda_, max_iters=100, verbose=False)
         # compute gradient and loss
         gradient = -1/N*tx.T.dot(y-tx@w) + lambda_*w
         loss = compute_loss(y,tx,w, loss_function)
-        L = 1/N*np.linalg.norm(tx.T.dot(tx)) + lambda_
+        L = 1/N*np.linalg.norm(tx.T.dot(tx),2) + lambda_
         # update w by gradient
         w = w - (2/(L+lambda_)) * gradient
         
