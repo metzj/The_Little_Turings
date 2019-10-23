@@ -42,8 +42,9 @@ def least_squares_SGD(y, tx, initial_w, batch_size=1, max_iters=100, gamma=0.7, 
     losses = []
     w = initial_w
     for n_iter in range(max_iters):
+        gradient = np.zeros([30])
         for minibatch_y, minibatch_tx in batch_iter(y,tx,batch_size):
-            gradient = compute_gradient(minibatch_y,minibatch_tx,w, loss_function)
+            gradient += compute_gradient(minibatch_y,minibatch_tx,w, loss_function)
             
         loss = compute_loss(y,tx,w, loss_function)
         w = w - gamma * gradient
@@ -87,13 +88,10 @@ def logistic_regression(y, tx, initial_w, max_iters = 100, gamma = 0.7, verbose 
     w = initial_w
     grad = []
     for n_iter in range(max_iters):
-        if use_SGD:
-            for minibatch_y, minibatch_tx in batch_iter(y, tx, batch_size):
-                grad = compute_gradient(minibatch_y, minibatch_tx, w, loss_function)
-        else:
-            grad = compute_gradient(y, tx, w, loss_function)
+        grad = compute_gradient(y, tx, w, loss_function)
         loss = compute_loss(y, tx, w, loss_function)
-        w -= gamma * grad
+        
+        w = w -gamma * grad
         ws.append(w)
         losses.append(loss)
         if verbose == True:

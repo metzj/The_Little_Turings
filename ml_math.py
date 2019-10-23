@@ -46,9 +46,10 @@ def compute_LL(y, tx, w):
     """compute the cost by negative log likelihood."""
     
     pred = sigmoid(tx.dot(w))
-    loss = y.T.dot(np.log(pred)) + (1 - y).T.dot(np.log(1 - pred))
+    #print("prediction ", pred)
+    likelyhood = y.transpose().dot(np.log(pred)) + (1 - y).transpose().dot(np.log(1 - pred))
     
-    return np.squeeze(- loss)
+    return -likelyhood
 
 ################### gradient computation ######################
 
@@ -91,14 +92,14 @@ def compute_gradient_MAE(y, tx, w):
 def compute_gradient_LL(y, tx, w):
     """compute the gradient of loss."""
     prediction = sigmoid(tx.dot(w))
-    gradient = tx.T.dot(prediction - y)
+    gradient = tx.transpose().dot(prediction - y)
     
     return gradient
 
 ######################## misc ######################
 def sigmoid(t):
     """apply sigmoid function on t."""
-    return 1.0 / (1 + np.exp(-t))
+    return 1.0 / (1.0 + np.exp(-t))
 
 # normalizing function courtesy of Cloistered Monkey
 # https://necromuralist.github.io/neural_networks/posts/normalizing-with-numpy
