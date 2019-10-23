@@ -27,16 +27,16 @@ def compute_loss(y, tx, w, loss_function):
 def compute_MSE(y, tx, w):
     """Calculate the mse loss."""
 
-    e = y - tx @ w
+    e = y - tx.dot(w)
     N = len(y)
-    MSE_loss = 1/(2*N)*e@e
-
+    MSE_loss = (1/(2*N))*np.transpose(e).dot(e)
+    
     return MSE_loss
 
 def compute_MAE(y, tx, w):
     """Calculate the mae loss."""
 
-    e = y- tx@w
+    e = y - tx.dot(w)
     N = len(y)
     loss = 1/(2*N)*sum(abs(e))
 
@@ -71,20 +71,20 @@ def compute_gradient(y, tx, w, loss_function):
 
 def compute_gradient_MSE(y, tx, w):
     """Compute the gradient of the MSE loss"""
-    e = y - tx@w
+    e = y - tx.dot(w)
     N = len(y)
     
-    gradient = -1/N*np.transpose(tx)@e
+    gradient = (-1/N)*tx.transpose().dot(e)
 
     return gradient
 
 def compute_gradient_MAE(y, tx, w):
     """Compute the gradient of the MAE loss"""
-    e = y - tx@w
+    e = y - tx.dot(w)
     N = len(y)
     
     sign_e = (e>=0)*2-1
-    gradient = -1/N*np.transpose(sign_e)@tx
+    gradient = -1/N*np.transpose(sign_e).dot(tx)
 
     return gradient
 

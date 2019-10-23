@@ -13,14 +13,14 @@ def least_squares_GD(y, tx, initial_w, max_iters=100, gamma = 0.7, verbose=False
     loss_function = "MSE"
     ws = [initial_w]
     losses = []
-    w = initial_w
+    w = np.copy(initial_w)
     for n_iter in range(max_iters):
         # compute gradient and loss
         gradient = compute_gradient(y,tx,w, loss_function)
         loss = compute_loss(y,tx,w, loss_function)
         
         # update w by gradient
-        w = w - gamma * gradient
+        w = w - (gamma * gradient)
         
         # store w and loss
         ws.append(w)
@@ -58,10 +58,10 @@ def least_squares_SGD(y, tx, initial_w, batch_size=1, max_iters=100, gamma=0.7, 
 def least_squares(y, tx):
     """calculate the least squares solution using normal equation
        Return: weights, MSE"""
-    w = np.linalg.solve(tx.transpose() @ tx, tx.transpose() @ y)
+    w = np.linalg.solve(tx.transpose().dot(tx), tx.transpose().dot(y))
     n = len(y)
-    e = y-tx@w
-    MSE = 1/(2*n)*e@e
+    e = y-tx.dot(w)
+    MSE = 1/(2*n)*e.transpose().dot(e)
     return w, MSE
 
 
@@ -71,7 +71,7 @@ def ridge_regression(y, tx, lambda_):
     # ridge regression:
     D = np.shape(tx)[1]
     N = np.shape(tx)[0]
-    w = np.linalg.solve(tx.transpose()@tx+2*N*lambda_*np.identity(D), tx.transpose()@y)
+    w = np.linalg.solve(tx.transpose().dot(tx)+2*N*lambda_*np.identity(D), tx.transpose().dot(y))
     loss = compute_loss(y,tx,w, "MSE")
     return w,loss
 
@@ -139,7 +139,7 @@ def ridge_regression_GD(y, tx, initial_w, lambda_, max_iters=100, verbose=False)
     N = len(y)
     for n_iter in range(max_iters):
         # compute gradient and loss
-        gradient = -1/N*tx.T.dot(y-tx@w) + lambda_*w
+        gradient = -1/N*tx.T.dot(y-tx.dot(w)) + lambda_*w
         loss = compute_loss(y,tx,w, loss_function)
         L = 1/N*np.linalg.norm(tx.T.dot(tx),2) + lambda_
         # update w by gradient
