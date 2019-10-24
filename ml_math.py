@@ -44,12 +44,10 @@ def compute_MAE(y, tx, w):
 
 def compute_LL(y, tx, w):
     """compute the cost by negative log likelihood."""
-    
-    pred = sigmoid(tx.dot(w))
-    #print("prediction ", pred)
-    likelyhood = y.transpose().dot(np.log(pred)) + (1 - y).transpose().dot(np.log(1 - pred))
-    
-    return -likelyhood
+    loss = 0
+    for n in range(len(y)):
+        loss += np.log(1 + np.exp(np.dot(tx[n,:].T,w))) - y[n]*np.dot(tx[n,:].T,w)
+    return loss
 
 ################### gradient computation ######################
 
@@ -91,10 +89,7 @@ def compute_gradient_MAE(y, tx, w):
 
 def compute_gradient_LL(y, tx, w):
     """compute the gradient of loss."""
-    prediction = sigmoid(tx.dot(w))
-    gradient = tx.transpose().dot(prediction - y)
-    
-    return gradient
+    return np.dot(tx.T,sigmoid(np.dot(tx,w))-y)
 
 ######################## misc ######################
 def sigmoid(t):
