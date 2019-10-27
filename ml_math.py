@@ -98,12 +98,11 @@ def compute_LL(y, tx, w):
     ----------------------------------------------------------------------------
     """
     # define the sigmoid
-    pred = sigmoid(tx.dot(w))
-    
-    # compute the likelyhood
-    likelyhood = y.transpose().dot(np.log(pred)) + (1 - y).transpose().dot(np.log(1 - pred))
-    
-    return -likelyhood
+
+    loss = 0
+    for n in range(len(y)):
+        loss += np.log(1 + np.exp(np.dot(tx[n,:].T,w))) - y[n]*np.dot(tx[n,:].T,w)
+    return loss
 
 def compute_LL2(y, tx, w):
     """
