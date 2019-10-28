@@ -24,3 +24,5 @@ The .py files (except run.py) are libraries containing functions we wrote during
 - proj1_helpers.py: provided helper functions for project 1
 
 - run.py: executable file returning our most optimized result for project 1
+
+- w0.npy: matrix containing our final weights
