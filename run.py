@@ -194,29 +194,63 @@ def build_poly(x, degree, linear = False):
             m[:,j] = x**j
         return m
 
-#load data
+DATA_TRAIN_PATH = '../data/train.csv'
+y, tX, ids = load_csv_data(DATA_TRAIN_PATH)
 
-y_test, tX_test, ids_test = load_csv_data('data/test.csv')
+tX0 = build_poly(tX,0)
+N = len(y)/4
+loss_tr_0, loss_te_0, w = cross_validation(y,tX0,4, solver='LS', maxit = 5)
 
+#Test every degree for every feature
+n,p = np.shape(tX)
+loss = []
+good_feat = []
+min_loss = np.ones(p)*10000
+min_deg = np.zeros(p)
+for deg in [1,2,3,4,5,6,7,8,9,10,11,12]:
+    for i in range(p):
+        print(deg,i)
+        tX_ = build_poly(tX[:,i],deg, linear=True)
+        loss_tr,loss_te,w = cross_validation(y,tX_,2, solver='LS')
+        if loss_te<min_loss[i]:
+            min_loss[i] = loss_te
+            min_deg[i] = deg
+        if loss_te < loss_te_0:
+            good_feat.append((i,deg))
 
+# Threshold for each feature
+id_min_loss = np.where(min_loss < loss_te_0)
 
-id_min_loss = np.array([ 0,  1,  2,  3,  4,  5,  6, 10, 11, 12, 13, 22, 24, 27])
-min_deg = np.array([11., 12., 12.,  5.,  2., 12.,  2.,  1., 11.,  6., 12., 12.,  2.,
-       11.,  1.,  1.,  1.,  1.,  1.,  8.,  1.,  2.,  3.,  9.,  3.,  1.,
-        2.,  3.,  1.,  4.])
-       
-weights = np.load('w0.npy')
-
-DATA_TEST_PATH = 'data/test.csv' # TODO: download train data and supply path here 
+#concatenate all good feature in tX0
+tX0 = build_poly(tX,0)
+for i in  id_min_loss[0]:
+    deg = int(min_deg[i])
+    tX0 = np.append(tX0, build_poly(tX[:,i], deg, linear=True),1)
+    
+#find best lambda for this model and train it with ridg_regression
+lambdas = np.logspace(-10, 0, 30)
+rmse_tr = []
+rmse_te = []
+mse_te_min = 10000
+w0 = np.ones((p))
+for lambda_ in lambdas:
+    mse_tr, mse_te, w = cross_validation(y,tX0,5,solver = 'RR',stoch = False, lambda_ = lambda_)
+    rmse_tr = np.append(rmse_tr,mse_tr)
+    rmse_te = np.append(rmse_te,mse_te)
+    if mse_te < mse_te_min:
+        w0 = w
+        mse_te_min = mse_te
+        
+#Load test data
+DATA_TEST_PATH = 'data/test.csv'
 _, tX_test, ids_test = load_csv_data(DATA_TEST_PATH)
 
+#concatenate all good feature in tX0
 tX_test_0 = build_poly(tX_test,0)
-for i in  id_min_loss:
+for i in  id_min_loss[0]:
     deg = int(min_deg[i])
     tX_test_0 = np.append(tX_test_0, build_poly(tX_test[:,i], deg, linear=True),1)
 
-
 OUTPUT_PATH = 'data/output.csv' # TODO: fill in desired name of output file for submission
-y_pred = predict_labels(weights, tX_test_0)
+y_pred = predict_labels(w0, tX_test_0)
 create_csv_submission(ids_test, y_pred, OUTPUT_PATH)
-
