@@ -1,5 +1,4 @@
 # Useful starting lines
-%matplotlib inline
 import numpy as np
 import matplotlib.pyplot as plt
 import math
@@ -8,8 +7,6 @@ from proj1_helpers import *
 from misc_helpers import *
 from plot_functions import *
 from ml_math import *
-%load_ext autoreload
-%autoreload 2
 
 from numpy.random import randint
 def sigmoid(t):
@@ -118,7 +115,7 @@ def logistic_regression_SGD(y , tx, lambda_, maxit, verbose = False):
             #print(k)
     return w
 
-    def build_k_indices(y, k_fold, seed):
+def build_k_indices(y, k_fold, seed):
     """build k indices for k-fold."""
     num_row = y.shape[0]
     interval = int(num_row / k_fold)
@@ -246,8 +243,9 @@ weights = np.array([ 2.83007006e-01,  2.49392270e+02, -3.05333493e+02, -2.637081
 
 #Now Build the tX train data set
 #start with bias
+tX_test = normalize(tX)
 tX_model_test = build_poly(tX_test[:,1],0,linear ='True')
-tX_test = normalize(tX_test)
+
 #create model
 for feat, deg in model:
     feat = int(float(feat.item()))
@@ -268,5 +266,5 @@ np.shape(tX_model_test)
 
 OUTPUT_PATH = 'data/output.csv' # TODO: fill in desired name of output file for submission
 y_pred = predict_labels(weights, tX_model_test)
-create_csv_submission(ids_test, y_pred, OUTPUT_PATH)
+create_csv_submission(ids, y_pred, OUTPUT_PATH)
 
