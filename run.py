@@ -195,76 +195,57 @@ def build_poly(x, degree, linear = False):
         return m
 
 #load data
-y, tX, ids = load_csv_data('data/train.csv')
+
 y_test, tX_test, ids_test = load_csv_data('data/test.csv')
 
-#Over sample
-y1 = y[y==1.]
-X1 = tX[y==1.,:]
-y = np.append(y,y1)
-tX = np.append(tX,X1,axis=0)
 
-#change y
-y = (y+1)/2
-# normalize X
-tX = normalize(tX)
 
-model = np.array([[ 0.,  0.],
-       [ 0.,  1.],
-       [ 1.,  1.],
-       [ 1.,  2.],
-       [ 2.,  1.],
-       [ 2.,  2.],
-       [ 2.,  3.],
-       [ 3.,  1.],
-       [ 3.,  2.],
-       [ 4.,  1.],
-       [ 4.,  2.],
-       [ 5.,  1.],
-       [ 7.,  1.],
-       [ 8.,  1.],
-       [10.,  1.],
-       [10.,  2.],
-       [11.,  2.],
-       [13.,  1.],
-       [13.,  3.],
-       [14.,  2.],
-       [15.,  2.],
-       [16.,  2.],
-       [17.,  2.],
-       [18.,  3.]])
+id_min_loss = np.array([ 0,  1,  2,  3,  4,  5,  6, 10, 11, 12, 13, 22, 24, 27])
+min_deg = np.array([11., 12., 12.,  5.,  2., 12.,  2.,  1., 11.,  6., 12., 12.,  2.,
+       11.,  1.,  1.,  1.,  1.,  1.,  8.,  1.,  2.,  3.,  9.,  3.,  1.,
+        2.,  3.,  1.,  4.])
+       
+weights = np.array([-5.24641878e+07,  4.76664873e+07, -1.02408133e-01,  2.04453443e-03,
+       -1.67652756e-05,  7.02643393e-08, -1.61126769e-10,  1.88143679e-13,
+       -4.51438853e-17, -1.57669641e-19,  2.04078037e-22, -1.03661870e-25,
+        1.99387855e-29,  4.79770068e+06,  3.96519083e-03, -4.25467032e-04,
+        1.37349321e-05, -3.49939622e-07,  5.15984884e-09, -4.33175181e-11,
+        2.19532675e-13, -6.97387319e-16,  1.39838831e-18, -1.71850940e-21,
+        1.18133910e-24, -3.47750488e-28,  2.11655537e-03, -2.88468110e-02,
+        1.29131928e-03, -2.16400529e-05,  1.78759587e-07, -8.48105663e-10,
+        2.50629548e-12, -4.81229383e-15,  6.09911955e-18, -5.05978692e-21,
+        2.64067345e-24, -7.85931865e-28,  1.01646842e-31,  2.11654549e-03,
+        8.57846997e-04, -4.04969648e-06,  5.13738992e-09, -1.34362198e-12,
+        8.74739641e-18,  2.11654741e-03,  8.34595522e-02, -1.26464838e-02,
+        2.11655018e-03,  9.14743843e-03, -8.68058331e-05,  3.80433465e-07,
+       -8.68438034e-10,  1.16940095e-12, -9.94795232e-16,  5.54021081e-19,
+       -2.04466183e-22,  4.94858602e-26, -7.53989024e-30,  6.55180192e-34,
+       -2.47325341e-38,  2.11654913e-03, -1.20427463e-03,  3.58998126e-03,
+        2.11654904e-03, -9.67356853e-04, -4.47311616e-03, -7.18238483e-03,
+       -4.67835844e-03,  1.03599690e-02, -4.96190745e-03,  1.15444418e-03,
+       -1.53785850e-04,  1.23279896e-05, -5.88358406e-07,  1.54052692e-08,
+       -1.70340793e-10,  2.11654860e-03,  2.87036299e-04,  7.06115244e-03,
+        5.41549976e-03,  7.28305967e-03,  8.28379251e-03,  6.20449822e-03,
+        9.59953392e-03,  3.90062959e-03,  7.00246420e-03,  6.41404543e-04,
+       -6.26503474e-03, -1.26312190e-03,  2.11654860e-03,  4.72091808e-02,
+       -3.58106456e-01,  2.11654860e-03,  1.74114598e-02, -7.71593593e-05,
+        3.21169682e-06, -1.17957372e-07,  1.60265780e-09, -1.11997351e-11,
+        4.53755213e-14, -1.10558138e-16,  1.59300962e-19, -1.24673305e-22,
+        4.07212132e-26,  2.11654860e-03,  2.47585268e-03, -3.28927326e-04,
+       -1.64898078e-02,  2.11654893e-03, -8.84954302e-04,  2.31009206e-02,
+        2.31248452e-05,  2.11654893e-03,  2.87005713e-03, -6.62665519e-02,
+       -4.38311565e-04])
 
-weights = np.array([ 2.83007006e-01,  2.49392270e+02, -3.05333493e+02, -2.63708162e+02,
-       -1.40522448e+02, -3.40884141e+02, -3.48412200e+02,  2.05541339e+02,
-        1.21257943e+02, -7.02681862e+01,  7.15839251e+01,  2.12093744e+02,
-        2.50868028e+02, -1.14420804e+02, -2.76352098e+02, -1.96605992e+02,
-        3.05462512e+02,  2.84946992e+02, -1.48135429e+02, -3.36488342e+02,
-       -3.49648218e+01, -3.81936723e+00, -3.39766665e+02,  3.39902283e+02])
+DATA_TEST_PATH = 'data/test.csv' # TODO: download train data and supply path here 
+_, tX_test, ids_test = load_csv_data(DATA_TEST_PATH)
 
-#Now Build the tX train data set
-#start with bias
-tX_test = normalize(tX_test)
-tX_model_test = build_poly(tX_test[:,1],0,linear ='True')
+tX_test_0 = build_poly(tX_test,0)
+for i in  id_min_loss:
+    deg = int(min_deg[i])
+    tX_test_0 = np.append(tX_test_0, build_poly(tX_test[:,i], deg, linear=True),1)
 
-#create model
-for feat, deg in model:
-    feat = int(float(feat.item()))
-    print(feat,deg)
-    if deg == 'arctan':
-        tX_model_test = np.append(tX_model_test, np.array([np.arctan(tX_test[:,feat])]).T,axis=1)
-    elif deg == 'cos':
-        tX_model_test = np.append(tX_model_test, np.array([np.cos(tX_test[:,feat])]).T,axis=1)
-    elif deg =='sin':
-        tX_model_test = np.append(tX_model_test, np.array([np.sin(tX_test[:,feat])]).T,axis=1)
-    else :
-        deg = float(deg)
-        if deg == 0.5 or deg == 1/3 or deg == -1/2 or deg == -1/3:
-            tX_model_test = np.append(tX_model_test, np.array([np.abs(tX_test[:,feat])**deg]).T,axis=1)
-        elif deg != 0:
-            tX_model_test = np.append(tX_model_test, np.array([tX_test[:,feat]**deg]).T,axis=1)
-np.shape(tX_model_test)
 
 OUTPUT_PATH = 'data/output.csv' # TODO: fill in desired name of output file for submission
-y_pred = predict_labels(weights, tX_model_test)
+y_pred = predict_labels(weights, tX_test_0)
 create_csv_submission(ids_test, y_pred, OUTPUT_PATH)
 
