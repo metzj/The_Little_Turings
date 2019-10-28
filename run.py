@@ -194,7 +194,7 @@ def build_poly(x, degree, linear = False):
             m[:,j] = x**j
         return m
 
-DATA_TRAIN_PATH = '../data/train.csv'
+DATA_TRAIN_PATH = 'data/train.csv'
 y, tX, ids = load_csv_data(DATA_TRAIN_PATH)
 
 tX0 = build_poly(tX,0)
