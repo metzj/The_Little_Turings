@@ -195,8 +195,8 @@ def build_poly(x, degree, linear = False):
         return m
 
 #load data
-DATA_TRAIN_PATH = 'data/train.csv' # TODO: download train data and supply path here 
-y, tX, ids = load_csv_data(DATA_TRAIN_PATH)
+y, tX, ids = load_csv_data('data/train.csv')
+y_test, tX_test, ids_test = load_csv_data('data/test.csv')
 
 #Over sample
 y1 = y[y==1.]
@@ -243,7 +243,7 @@ weights = np.array([ 2.83007006e-01,  2.49392270e+02, -3.05333493e+02, -2.637081
 
 #Now Build the tX train data set
 #start with bias
-tX_test = normalize(tX)
+tX_test = normalize(tX_test)
 tX_model_test = build_poly(tX_test[:,1],0,linear ='True')
 
 #create model
@@ -266,5 +266,5 @@ np.shape(tX_model_test)
 
 OUTPUT_PATH = 'data/output.csv' # TODO: fill in desired name of output file for submission
 y_pred = predict_labels(weights, tX_model_test)
-create_csv_submission(ids, y_pred, OUTPUT_PATH)
+create_csv_submission(ids_test, y_pred, OUTPUT_PATH)
 
